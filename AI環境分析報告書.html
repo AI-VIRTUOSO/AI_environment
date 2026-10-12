@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ai-report-date" content="20260927">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop offset=%220%22 stop-color=%22%230891b2%22/%3E%3Cstop offset=%22.55%22 stop-color=%22%23a78bfa%22/%3E%3Cstop offset=%221%22 stop-color=%22%23ff9ad1%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg fill=%22none%22 stroke=%22url(%23g)%22 stroke-width=%224.6%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E  %3Cpath d=%22M11 24a21 21 0 0 1 42 0%22 opacity=%220.6%22/%3E  %3Cpath d=%22M20 24a12 12 0 0 1 24 0%22 opacity=%220.85%22/%3E  %3Crect x=%223%22 y=%2229%22 width=%2258%22 height=%2215%22 rx=%224.5%22/%3E  %3Crect x=%223%22 y=%2246%22 width=%2258%22 height=%2215%22 rx=%224.5%22/%3E  %3Cpath d=%22M23 36.5h30M23 53.5h30%22 stroke-width=%223.6%22 opacity=%220.75%22/%3E%3C/g%3E%3Cg fill=%22url(%23g)%22%3E  %3Ccircle cx=%2232%22 cy=%2224%22 r=%225%22/%3E  %3Ccircle cx=%2212%22 cy=%2236.5%22 r=%224.6%22/%3E  %3Ccircle cx=%2212%22 cy=%2253.5%22 r=%224.6%22/%3E%3C/g%3E%3C/svg%3E">
+<title>AI環境分析報告書 20260927 修正後の再評価（同日2版目）</title>
+<style>
+  /* 本文最大幅1200pxの画面向けレイアウト。2026-09-20版より、この体裁を正本の基準デザインとする。
+     印刷時は末尾の @media print でA4横向きへ落とす。 */
+  :root {
+    --page-w: 1200px;
+    --bg: #05070d;
+    --ink: #dbe4f0;
+    --ink-soft: #c4d0e0;
+    --ink-dim: #8fa3bf;
+    --cyan: #7ef2ff;
+    --line: rgba(255,255,255,0.12);
+    --panel: rgba(255,255,255,0.03);
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--bg); }
+  body {
+    margin: 0;
+    padding: 28px 24px 48px;
+    background:
+      radial-gradient(900px 520px at 12% -6%, rgba(0,229,255,0.10), transparent 60%),
+      radial-gradient(900px 520px at 88% 4%, rgba(168,85,247,0.10), transparent 60%),
+      var(--bg);
+    background-attachment: fixed;
+    color: var(--ink);
+    font-family: "Noto Sans CJK JP", "Noto Sans", sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .mono, code, .code-block { font-family: "Noto Sans Mono CJK JP", "DejaVu Sans Mono", monospace; }
+  .mono { font-size: 0.92em; color: #a8ecff; word-break: break-word; }
+
+  /* ---- 表紙 ---- */
+  .cover {
+    position: relative;
+    max-width: var(--page-w);
+    margin: 0 auto 24px;
+    padding: 34px 48px 32px;
+    border: 1px solid rgba(0,229,255,0.22);
+    border-radius: 18px;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 16% 10%, rgba(0,229,255,0.18), transparent 46%),
+      radial-gradient(circle at 86% 92%, rgba(168,85,247,0.20), transparent 48%),
+      linear-gradient(160deg, #05070d 0%, #070a15 55%, #05070d 100%);
+  }
+  .cover::before {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.06) 1px, transparent 1px);
+    background-size: 30px 30px;
+    mask-image: linear-gradient(180deg, transparent, rgba(0,0,0,0.85) 22%, rgba(0,0,0,0.85) 78%, transparent);
+    pointer-events: none;
+  }
+  .cover > * { position: relative; z-index: 1; }
+  .cover-eyebrow {
+    font-family: "Noto Sans Mono CJK JP", monospace;
+    letter-spacing: 0.26em;
+    font-size: 11px;
+    color: #4bd7ff;
+    margin-bottom: 18px;
+  }
+  /* 表題行: AI環境アイコン（サーバーラックと稼働信号）と見出しを横並びにする。
+     アイコンはファビコンと同じ意匠で、配色は表題のグラデーションに合わせる。 */
+  .cover-titlebar {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin: 0 0 14px;
+  }
+  .cover-mark {
+    width: 62px; height: 62px;
+    flex: none;
+    filter: drop-shadow(0 0 10px rgba(0,229,255,0.28));
+  }
+  .cover-title {
+    font-size: 46px;
+    font-weight: 700;
+    line-height: 1.25;
+    margin: 0;
+    background: linear-gradient(90deg, #7ef2ff 0%, #a3f0d8 35%, #c79bff 70%, #ff9ad1 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .cover-sub {
+    font-size: 15.5px;
+    color: #9fb3ce;
+    margin: 14px 0 16px;
+  }
+  .cover-meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 40px;
+    border-top: 1px solid rgba(0,229,255,0.26);
+    padding-top: 14px;
+    font-size: 13.5px;
+    color: var(--ink-dim);
+  }
+  .cover-meta b { color: #d8e6f5; font-weight: 600; }
+  .cover-scoreboard {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .score-chip {
+    border: 1px solid rgba(0,229,255,0.32);
+    background: linear-gradient(160deg, rgba(0,229,255,0.09), rgba(168,85,247,0.06));
+    border-radius: 12px;
+    padding: 10px 13px 11px;
+  }
+  .score-chip .label { font-size: 12.5px; color: #85a0c0; line-height: 1.5; }
+  .score-chip .value { font-size: 24px; font-weight: 700; color: var(--cyan); margin-top: 6px; line-height: 1.25; }
+  .score-chip .value small { display: block; font-size: 11.5px; color: #7f93ac; font-weight: 400; margin-top: 4px; line-height: 1.45; }
+
+  /* ---- 本文セクション ---- */
+  .page {
+    max-width: var(--page-w);
+    margin: 0 auto 20px;
+    padding: 26px 48px 28px;
+    background: rgba(255,255,255,0.018);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+  }
+  .sec-tag {
+    display: inline-block;
+    font-family: "Noto Sans Mono CJK JP", monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: #6fe8ff;
+    background: rgba(0,229,255,0.08);
+    border: 1px solid rgba(0,229,255,0.3);
+    border-radius: 999px;
+    padding: 4px 14px;
+    margin-bottom: 9px;
+  }
+  h1.sec-title {
+    font-size: 27px;
+    line-height: 1.4;
+    margin: 0 0 14px;
+    padding-bottom: 11px;
+    color: #f1f6fd;
+    border-bottom: 1px solid var(--line);
+    font-weight: 700;
+  }
+  h1.sec-title span.grad {
+    background: linear-gradient(90deg, #7ef2ff, #a78bfa);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  h2 {
+    font-size: 19px;
+    color: #9fe8ff;
+    margin: 24px 0 8px;
+    font-weight: 700;
+    display: flex; align-items: center; gap: 10px;
+  }
+  h2::before {
+    content: "";
+    width: 5px; height: 20px;
+    background: linear-gradient(180deg, #00e5ff, #a855f7);
+    border-radius: 3px;
+    flex: none;
+  }
+  h3 { font-size: 16px; color: #cdd9ea; margin: 15px 0 5px; font-weight: 700; }
+  p { margin: 6px 0; color: var(--ink-soft); }
+  a { color: var(--cyan); }
+  ul, ol { margin: 6px 0; padding-left: 24px; }
+  li { margin: 4px 0; color: var(--ink-soft); }
+
+  /* ---- パネル ---- */
+  .panel {
+    background: var(--panel);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 13px 22px;
+    margin: 12px 0;
+  }
+  .panel > *:first-child { margin-top: 0; }
+  .panel > *:last-child { margin-bottom: 0; }
+  .panel.callout-good { border-color: rgba(74,222,128,0.35); background: rgba(74,222,128,0.06); }
+  .panel.callout-warn { border-color: rgba(250,204,21,0.35); background: rgba(250,204,21,0.06); }
+  .panel.callout-gap  { border-color: rgba(248,113,113,0.35); background: rgba(248,113,113,0.06); }
+  .panel.conclusion   { border-color: rgba(0,229,255,0.35); background: linear-gradient(160deg, rgba(0,229,255,0.08), rgba(168,85,247,0.05)); }
+  .panel.glossary     { border-color: rgba(168,85,247,0.4); background: linear-gradient(160deg, rgba(168,85,247,0.08), rgba(0,229,255,0.05)); }
+  .cover .panel.conclusion { margin: 0 0 6px; padding: 15px 24px; }
+  .cover .panel.conclusion ul { padding-left: 22px; }
+  .cover .panel.conclusion li { margin: 5px 0; }
+
+  /* ---- 表 ---- */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 16px;
+    font-size: 13.5px;
+    line-height: 1.55;
+  }
+  th, td {
+    border: 1px solid var(--line);
+    padding: 7px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: rgba(0,229,255,0.10); color: #d9f4ff; font-weight: 700; }
+  tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+  td.num, th.num { text-align: right; font-family: "Noto Sans Mono CJK JP", monospace; }
+  /* 10観点表: 数値列を折り返さない */
+  table.dims td:nth-child(2), table.dims td:nth-child(3), table.dims td:nth-child(4),
+  table.dims th:nth-child(2), table.dims th:nth-child(3), table.dims th:nth-child(4) { white-space: nowrap; }
+  /* 前版残件表: 優先度と判定を中央揃え */
+  table.prev-findings td:nth-child(1), table.prev-findings td:nth-child(3),
+  table.prev-findings th:nth-child(1), table.prev-findings th:nth-child(3) { text-align: center; white-space: nowrap; }
+  /* 1列目（観点・優先度など）は折り返しすぎないように */
+  table td:first-child, table th:first-child { white-space: nowrap; }
+  table td:first-child:has(b) { white-space: normal; }
+
+  .badge { display: inline-block; font-size: 11px; font-weight: 700; border-radius: 6px; padding: 2px 9px; }
+  .badge-p0 { background: rgba(248,113,113,0.18); color: #ffb4b4; border: 1px solid rgba(248,113,113,0.5); }
+  .badge-p1 { background: rgba(250,204,21,0.16); color: #ffe08a; border: 1px solid rgba(250,204,21,0.45); }
+  .badge-p2 { background: rgba(129,140,248,0.16); color: #c7cdff; border: 1px solid rgba(129,140,248,0.45); }
+
+  .code-block {
+    display: block;
+    background: #0a0f1a;
+    border: 1px solid rgba(0,229,255,0.22);
+    border-radius: 10px;
+    padding: 11px 14px;
+    color: #8be9ff;
+    font-size: 13px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 10px 0;
+    line-height: 1.55;
+  }
+  .footer-note {
+    margin-top: 20px;
+    padding-top: 11px;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: #6b7b93;
+    border-top: 1px dashed var(--line);
+  }
+
+  /* ---- ゲージ ---- */
+  .gauge-row { display: flex; align-items: center; gap: 16px; margin: 6px 0; }
+  .gauge-label { width: 190px; flex: none; font-size: 14px; color: #d3ddec; font-weight: 600; }
+  .gauge-track { flex: 1; height: 10px; background: rgba(255,255,255,0.08); border-radius: 6px; overflow: hidden; }
+  .gauge-fill { height: 100%; border-radius: 6px; background: linear-gradient(90deg, #00e5ff, #a855f7); }
+  .gauge-val { width: 52px; flex: none; text-align: right; font-family: "Noto Sans Mono CJK JP", monospace; font-size: 14px; color: var(--cyan); font-weight: 700; }
+
+  .stage-flow { display: flex; flex-wrap: wrap; gap: 10px; margin: 10px 0; font-family: "Noto Sans Mono CJK JP", monospace; font-size: 12.5px; }
+  .stage-flow span { background: rgba(0,229,255,0.08); border: 1px solid rgba(0,229,255,0.3); border-radius: 8px; padding: 6px 12px; color: #a8ecff; }
+  .stage-flow .arrow { border: none; background: none; color: #567; padding: 6px 0; }
+
+  .status-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; margin: 10px 0; }
+  .status-item { border-radius: 10px; padding: 9px 13px; font-size: 12.5px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); }
+  .status-item .k { color: var(--ink-dim); }
+  .status-item .v { font-weight: 700; margin-top: 3px; }
+  .v-reached { color: #6ee7a0; }
+  .v-notyet { color: #ff9d9d; }
+  .v-deny { color: #ffcf6e; }
+
+  /* ---- 画面幅が足りない場合 ---- */
+  @media (max-width: 1100px) {
+    .cover-scoreboard { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .cover-meta { grid-template-columns: 1fr; }
+    .status-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 820px) {
+    body { padding: 20px 16px 40px; font-size: 14.5px; }
+    .cover { padding: 26px 22px 24px; }
+    .cover-title { font-size: 34px; }
+    .cover-titlebar { gap: 14px; }
+    .cover-mark { width: 44px; height: 44px; }
+    .page { padding: 22px 22px 24px; }
+    h1.sec-title { font-size: 22px; }
+    .gauge-label { width: 130px; font-size: 13px; }
+    table { font-size: 12.5px; display: block; overflow-x: auto; }
+    table td:first-child, table th:first-child { white-space: normal; }
+  }
+
+  /* ---- 印刷（正本はA4横。こちらは1200px幅の見た目のまま紙へ落とす） ---- */
+  @media print {
+    @page { size: A4 landscape; margin: 12mm; }
+    html, body { background: #05070d; }
+    body { padding: 0; font-size: 9.6pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .cover, .page { max-width: none; border: none; border-radius: 0; margin: 0; padding: 0 0 8mm; page-break-after: always; }
+    .page:last-child { page-break-after: auto; }
+    .cover-title { font-size: 30pt; }
+    .cover-mark { width: 38pt; height: 38pt; filter: none; }
+    h1.sec-title { font-size: 17pt; }
+    table { font-size: 8.6pt; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-eyebrow">PC1-PC4 AI ENVIRONMENT · 2026-09-27 20:40 RE-MEASURED · SAME-DAY UPDATE AFTER FIXES · ABSOLUTE RESCORE</div>
+  <div class="cover-titlebar">
+    <svg class="cover-mark" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="AI環境アイコン">
+      <defs><linearGradient id="ai-env-mark" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7ef2ff"/><stop offset=".55" stop-color="#a78bfa"/><stop offset="1" stop-color="#ff9ad1"/></linearGradient></defs>
+
+      <g fill="none" stroke="url(#ai-env-mark)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M11 24a21 21 0 0 1 42 0" opacity="0.6"/>
+        <path d="M20 24a12 12 0 0 1 24 0" opacity="0.85"/>
+        <rect x="3" y="29" width="58" height="15" rx="4.5"/>
+        <rect x="3" y="46" width="58" height="15" rx="4.5"/>
+        <path d="M23 36.5h30M23 53.5h30" stroke-width="2" opacity="0.75"/>
+      </g>
+      <g fill="url(#ai-env-mark)">
+        <circle cx="32" cy="24" r="3.6"/>
+        <circle cx="12" cy="36.5" r="3.2"/>
+        <circle cx="12" cy="53.5" r="3.2"/>
+      </g>
+    </svg>
+    <div class="cover-title">AI環境分析報告書</div>
+  </div>
+  <div class="panel conclusion">
+    <p><b>本日の評価（同日2版目・20:40再実測）</b></p>
+    <ul>
+      <li><b>独立採点 8.94 / 10</b>（前版＝同日09:52版の8.85から <b>+0.09</b>）。10観点すべて9.5未満、最低は再帰的自己改善 <b>8.5</b>。<b>下がった観点はない。</b></li>
+      <li><b>前版が「遅れている」とした4点すべてに、その日のうちに着手された。</b>障害の原因を工程別に分けて記録する判定、20課題×3回の反復診断（週次タイマーで13:47に定期実行済み、<b>pass^3 = 0.95</b>）、経路ごとの脅威の棚卸し、電気料金単価とGPU電力の実測参照。前版の次の一手12件は、<b>完了2・部分4・未達4・未確認2</b>。</li>
+      <li><b>利用者に効く不具合の本番修正が入った。</b>日本語の仕様書をFileEditorがバイナリと誤判定して読めない不具合（本番の新会話で読取・作成・納品を確認）、AppのLLM設定の脱落、納品開始の指示。推論サービスには<b>メモリ64GiB・プロセス1024の上限</b>が入った（本版で実機確認）。障害・退行の<b>共通受付</b>には本日26件が登録され、14件が解決確認済み。</li>
+      <li><b>ローカルAIの改善候補が、この1日で6系統以上作られた</b>（計算ツール、JSON制約、思考の長さ、読取の集約など）。事前に登録した条件で比較し、品質が同じでトークンが増えた等の理由で<b>すべて不採用</b>とした。判断は正しいが、<b>ローカルAI発の採用は0件のまま</b>で、再帰的自己改善は最低観点に残る。</li>
+      <li><b>新しく見つかった穴が2つある。</b>(1) FileEditorの本番適用に伴い20:15と20:22にスキャン結果を取り直したが、HIGH分類（15:39）が追随しておらず、<b>strict95のセキュリティが9.0→8.0</b>になった。件数は同じ（67件・222件）で、脆弱性が増えたのではなく<b>証跡の同期漏れ</b>である。(2) 本番の差し替え作業中の12:51〜15:50に、<b>健全性監査が7回失敗</b>した。すべて次の回で回復し、15:50以降は連続でPASSしている。</li>
+    </ul>
+  </div>
+  <div class="cover-sub"><b>総括:</b> 前版が指摘した「評価の厚み」と「原因の取り違え」は、<b>仕組みとして回り始めた</b>。点の動きが小さいのは、成果がまだ<b>合成課題・1回の本番実行・本日1日だけの実績</b>にとどまり、<b>採用・期間・本人の判断</b>の3つが残っているためである。</div>
+  <div class="cover-meta">
+    <div><b>対象</b> PC1（主対象）／PC2・PC3はA0・A1限定のworker／PC4は保管庫。PC1〜PC4はいずれもping応答あり（20:42確認）。PC5は導入しない</div>
+    <div><b>評価対象外</b> UPS・PC5・第三者監査・14日無退行観測（観測自体は継続）</div>
+    <div><b>機械ゲート（20:40再実測）</b> strict95 平均<b>9.15</b>（未達6観点）／strict8 blocker 2・strict9 3・strict10 5／証跡TTL <b>PASS</b>／失敗ユニット2件（週次点検1件＋手動の一時実行の残骸1件。前版と同じ2件）</div>
+    <div><b>採点方式</b> 絶対基準による本報告独自（独立）の採点。前版の点数を起点にした差分採点はしていない。作業記録は自己申告として扱い、本版で再実行したゲートと実機の状態を優先した</div>
+  </div>
+  <div class="cover-scoreboard">
+    <div class="score-chip"><div class="label">独立採点</div><div class="value">8.94 <small>/10・未達</small></div></div>
+    <div class="score-chip"><div class="label">前版(8.85)からの増減</div><div class="value">+0.09 <small>/ 環境の改善</small></div></div>
+    <div class="score-chip"><div class="label">最低観点</div><div class="value">8.5 <small>/ 再帰的自己改善</small></div></div>
+    <div class="score-chip"><div class="label">機械適合(strict95)</div><div class="value">9.15 <small>/ 前版8.9・未達6観点</small></div></div>
+    <div class="score-chip"><div class="label">上がった観点 / 下がった観点</div><div class="value">7 / 0 <small>±0は3観点</small></div></div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="sec-tag">01 — TEN DIMENSIONS</div>
+  <h1 class="sec-title">10観点の評価 <span class="grad">/ 絶対基準による独立採点</span></h1>
+
+  <table>
+    <tr><th>点</th><th>意味</th></tr>
+    <tr><td><b>10.0</b></td><td>本番運用で恒常的に成立し、退行を自動検出して停止できる</td></tr>
+    <tr><td><b>9.0〜9.5</b></td><td>実証済みだが条件付き（アイドル時限定、手動運用が残る、利用実績が薄い）</td></tr>
+    <tr><td><b>8.0〜8.9</b></td><td>能力は実証済みだが運用として回っていない、または重要な穴が残る</td></tr>
+    <tr><td><b>7.0〜7.9</b></td><td>仕組みはあるが成果の採用実績がない</td></tr>
+  </table>
+
+  <div class="panel"><p><b>採点の前提。</b>上の<b>絶対基準</b>に照らして付けた。前版の点数を起点にした差分採点はしていない。採点時は、機械ゲートが見ない3点 —
+  <b>成果が採用されたか / 実際に使われている頻度 / 自動化されているか</b> — を観点ごとに問うた。
+  <b>機械適合</b>（strict8/9/95/10）は、設定済みの検査への適合度であり、この独立採点を代替しない。
+  本版は同じ日の2版目で、09:52以降に行われた修正を対象にした。作業記録（<span class="mono">reports/evidence/</span>・Obsidianの対応記録）は<b>作業者の自己申告</b>として扱った。点数の根拠には、<b>本版の20:40に再実行したゲートの出力と実機の状態</b>（失敗ユニット、健全性監査の履歴、日次E2Eの2系統、コンテナの資源上限、VS Codeの起動指定、週次診断の定期実行結果）を優先した。
+  合成課題での成績、本番1回だけの成功、本日だけの実績は、「実証済みだが利用実績が薄い」として帯の上限を抑えた。</p></div>
+
+  <table class="dims">
+    <colgroup>
+      <col style="width:11%"><col style="width:9%"><col style="width:7%"><col style="width:9%"><col style="width:64%">
+    </colgroup>
+    <tr><th>観点</th><th>評価</th><th>前版比</th><th>9.5判定</th><th>根拠</th></tr>
+    <tr><td>AIエージェント</td><td>8.8 / 10</td><td>+0.1</td><td>未達</td><td>実タスクE2Eは9/23〜27の毎日PASSが続く（9/27は09:49）。これに加えて<b>20課題×3回の反復診断</b>が週次タイマーで動き、<b>13:47の定期実行で60回中57回正答、pass^3 = 0.95</b>（本版で集計結果を確認）。本番では、<b>日本語の仕様書を読めない不具合</b>が直り、新しい会話で読取・作成・納品・終了まで通った（作業記録。本番1会話・85,073トークン）。<b>減点:</b> 反復診断は<b>既知の合成課題</b>で、加重平均の課題は3回とも誤答（PRB-20260927-006、対応中）。成果物を作る反復は12回の予定が費用上限で8回で止まり、pass^3は出ていない。30日窓の実タスクSLOは工程81.8%・正答72.7%で、標本は11件（必要20）。<b>環境の改善。</b></td></tr>
+    <tr><td>AIオーケストレーション</td><td>9.1 / 10</td><td>±0</td><td>未達</td><td>PC2・PC3への日次投入は9/26もPASSで、自動の実投入が続く（9/27分は21:27の予定で、本版の時点では未実行）。worker役割の遵守を合成診断へ加えた。<b>減点:</b> worker契約SLOは過去の欠測込みで63.6%、予算枯渇。障害時に取り決めどおりに復旧した実績はない。高速プレビューはPC3の審査を省く設計のまま。本日の修正はPC1内が中心で、worker連携そのものは変わっていない。</td></tr>
+    <tr><td>再帰的自己改善</td><td>8.5 / 10</td><td>+0.1</td><td>未達</td><td>前版が「欠けている」とした<b>候補の数</b>が増えた。ローカルAIが、診断の失敗から候補を作り、事前に登録した条件で比較する流れを<b>1日で6系統以上</b>回した。結果はすべて<b>正しい不採用</b>である（例：計算ツールを短い契約で渡す候補は90/90正答でも生成元込みで6.57%のトークン増、思考を長くする候補は60/60へ改善したがトークン178.86%増）。V7の採用証拠が通知表示の変更で失効したことを検査が見つけ、修復した。<b>減点:</b> 採用は依然としてCodexが実装したV7の1件だけで、<b>ローカルAI発の採用は0件</b>。V7の72時間条件は9/27 23:40以降でないと判定できない。strict95の <span class="mono">recursive_maturity_verified</span> は未達。<b>環境の改善</b>（仕組みの利用量が増えた分だけ）。</td></tr>
+    <tr><td>可観測性/評価</td><td>9.0 / 10</td><td>+0.2</td><td>未達</td><td>前版の中心的な指摘だった<b>原因の取り違えに、仕組みで対処した</b>。複合観測に工程別の判定を加え、11:02・11:12の試行では応答・browser・コード・周辺環境・後始末をそれぞれPASSとして記録した（本版で履歴を確認）。日次の総合判定は厳格なまま、00:10の失敗を消していない。残留sandbox監視は、実際には<b>別のDockerを見ていて稼働中の0件と誤認していた</b>ことが分かり、rootless側へ直された。障害・退行の<b>共通受付</b>が稼働し、本日26件を登録した（解決確認14・対応中7・終了4・未対応1）。SDKの終了前の記録で<b>5会話120,521トークンを過小計上</b>していたことも見つけて直した。<b>減点:</b> 必須証跡の期限SLOは過去の失効込みで49.6%。過去の比較875回のうち874回は最終費用の記録形式がなく、過去の費用値は検証できない。PC3審査が人の判断とどれだけ一致するかは、まだ測っていない。<b>環境の改善。</b></td></tr>
+    <tr><td>データ・知識基盤</td><td>9.3 / 10</td><td>±0</td><td>未達</td><td>外部バックアップの日次自動運用は9/26 22:13にPASS（9/27分は22:12の予定）。PC4の週次保管と毎回の全量の隔離復元（9/27 03:27、3者一致）は前版で確認済み。本日の作業は、原本・Obsidianの要約・変更前の控え・隔離復元試験を、1件ごとにそろえて残している。<b>減点:</b> バックアップ鮮度SLOは過去の空白込みで90.9%。PC4保管は承認済みの一部で、マシン全体の復元ではない。本日の変化は記録の作法で、基盤そのものは前版と同じ。</td></tr>
+    <tr><td>セキュリティ</td><td>8.8 / 10</td><td>+0.1</td><td>未達</td><td><b>経路ごとの脅威の棚卸し</b>を6経路で行い、OWASPの観点を当てた。その結果を受けて、上限がなかった推論サービスに<b>メモリ64GiB・プロセス1024の上限</b>を入れた（本版で <span class="mono">docker inspect</span> により確認）。VS Codeは堅牢化指定（<span class="mono">--ozone-platform=x11 --use-gl=swiftshader</span>）で動いている。FileEditor修正版の本番イメージはVEX PASS（生CRITICAL 5・実効0）。現行Appのイメージに対応するスキャンが<b>抜けていた</b>ことを見つけ、取り直した。<b>減点:</b> 残存リスク（生CRITICAL 10・HIGH 451）の本人受領は未署名。棚卸しで、<b>sandboxに <span class="mono">LLM_API_KEY</span> 等の環境変数名がある</b>ことが分かったが、値と有効な権限は未確認（PRB-20260927-008、対応中）。スキャンを取り直した後に<b>HIGH分類が追随せず</b>、strict95の分類一致の検査が落ちた。OSのメタパッケージ4件は管理者認証待ち。<b>環境の改善。</b></td></tr>
+    <tr><td>コスト統治</td><td>8.7 / 10</td><td>+0.2</td><td>未達</td><td>前版で「重要な穴」とした電力に手が入った。<b>電気料金単価38円/kWhが設定され、GPU電力を継続して実測</b>し、strict95の照会・電力実測・警告予算の3条件が通った（本日20:40時点でGPU 0.74kWh、約28円）。費用は採否の判断に実際に使われ、6系統以上の候補がトークン増を理由に止まった。トークンの過小計上を直し、採用には最終費用の確認を必須にした。<b>減点:</b> 38円は既存の設定値で、現在の契約単価とは照合していない。GPU以外はモデルによる推計で、壁面電力の実測ではない。品質が同じで費用が下がった候補は1件もない（strict95の比較対と効率の2条件が未達）。<b>環境の改善。</b></td></tr>
+    <tr><td>人間協働/UX</td><td>9.2 / 10</td><td>+0.1</td><td>未達</td><td>利用者から見て効く修正が入った。日本語の仕様書を渡しても読めずに止まる不具合が直り、<b>完了→自動で納品→受領の通知→最終完了</b>の順に正しく納品されるようになった（作業記録。通常の納品1件と集計2会話で確認）。モデルを切り替えても、納品の指示や個別の設定が消えないようにした。AIが本人の判断を代筆せず、OS更新は利用者に端末での実行を依頼している。<b>減点:</b> 高速プレビューで承認が来ないことを画面に示す改修は、本版でも確認できていない。モデルを実際に切り替えた後の保持は未確認。</td></tr>
+    <tr><td>信頼性/SRE</td><td>8.7 / 10</td><td>+0.1</td><td>未達</td><td>VS Codeを堅牢化指定で再起動した後の回復が、<b>約11時間続いている</b>。健全性監査は09:45以降の142回中135回がPASSで、7回の失敗（12:51〜15:50）は、いずれも本番イメージやAppの差し替え作業と同じ時間帯で、<b>次の回で回復した</b>。15:50以降は連続でPASS。推論サービスに資源の上限が入り、暴走時の巻き添えが抑えられた。本番推論の健全性は833/833。<b>減点:</b> SLOは7件中3件が未達（3件とも予算枯渇）、2件が標本不足。週次点検の失敗状態は次回（10/4）まで残る。本番の変更中に監視が失敗し、変更による一時的な失敗と本物の障害を<b>見分ける印がない</b>。AI基盤はPC1の1台だけ。<b>環境の改善。</b></td></tr>
+    <tr><td>相互運用性</td><td>9.3 / 10</td><td>±0</td><td>未達</td><td>PC3の審査はOpenAI互換のllama-serverで、モデルの身元を照合してから使う（前版で確認）。App再作成時にComposeの既定モデルが稼働中の設定から戻ってしまう不具合を直し、設定の引継ぎを実APIで確認した。<b>減点:</b> 障害時に別の基盤へ取り決めどおり復旧した実績はまだない。worker間の契約は独自形式。本日の修正はPC1内の整合で、他の基盤との互換の実証は増えていない。</td></tr>
+    <tr><td><b>平均</b></td><td><b>8.94 / 10</b></td><td><b>+0.09</b></td><td><b>未達</b></td><td>7観点が上がって<b>+0.9</b>、下がった観点はなく、3観点が横ばい。上がった分はすべて<b>環境の改善</b>である。採点の是正はない。上げ幅を0.1〜0.2にとどめたのは、本日の成果の多くが<b>合成課題・本番1回・本日1日</b>の実績で、絶対基準の「実証済みだが利用実績が薄い」に当たるためである。9.5へ効く順は (1) ローカルAIの候補を1件、採用まで通す、(2) 残存リスクの本人受領、(3) 実作業の反復を最後まで回し、PC3審査と人の判断の一致率を出す、(4) スキャンと分類の同期を自動にする、(5) 期間SLOの回復。</td></tr>
+  </table>
+
+  <div class="gauge-row"><div class="gauge-label">AIエージェント</div><div class="gauge-track"><div class="gauge-fill" style="width:88%"></div></div><div class="gauge-val">8.8</div></div>
+  <div class="gauge-row"><div class="gauge-label">オーケストレーション</div><div class="gauge-track"><div class="gauge-fill" style="width:91%"></div></div><div class="gauge-val">9.1</div></div>
+  <div class="gauge-row"><div class="gauge-label">再帰的自己改善</div><div class="gauge-track"><div class="gauge-fill" style="width:85%"></div></div><div class="gauge-val">8.5</div></div>
+  <div class="gauge-row"><div class="gauge-label">可観測性/評価</div><div class="gauge-track"><div class="gauge-fill" style="width:90%"></div></div><div class="gauge-val">9.0</div></div>
+  <div class="gauge-row"><div class="gauge-label">データ・知識基盤</div><div class="gauge-track"><div class="gauge-fill" style="width:93%"></div></div><div class="gauge-val">9.3</div></div>
+  <div class="gauge-row"><div class="gauge-label">セキュリティ</div><div class="gauge-track"><div class="gauge-fill" style="width:88%"></div></div><div class="gauge-val">8.8</div></div>
+  <div class="gauge-row"><div class="gauge-label">コスト統治</div><div class="gauge-track"><div class="gauge-fill" style="width:87%"></div></div><div class="gauge-val">8.7</div></div>
+  <div class="gauge-row"><div class="gauge-label">人間協働/UX</div><div class="gauge-track"><div class="gauge-fill" style="width:92%"></div></div><div class="gauge-val">9.2</div></div>
+  <div class="gauge-row"><div class="gauge-label">信頼性/SRE</div><div class="gauge-track"><div class="gauge-fill" style="width:87%"></div></div><div class="gauge-val">8.7</div></div>
+  <div class="gauge-row"><div class="gauge-label">相互運用性</div><div class="gauge-track"><div class="gauge-fill" style="width:93%"></div></div><div class="gauge-val">9.3</div></div>
+</div>
+
+<div class="page">
+  <div class="sec-tag">02 — PREVIOUS FINDINGS RESOLVED</div>
+  <h1 class="sec-title">前版の次の一手12件はどうなったか <span class="grad">/ 完了2件・部分4件・未達4件・未確認2件</span></h1>
+
+  <div class="panel conclusion"><p>前版（同日09:52）が「次にすべきこと」に挙げた12件を、本版20:40の機械出力と実機の状態で1件ずつ照合した。作業記録に「実施した」とあっても、本版で確かめられないものはそう明記した。</p></div>
+
+  <table class="prev-findings">
+    <colgroup>
+      <col style="width:7%"><col style="width:22%"><col style="width:9%"><col style="width:62%">
+    </colgroup>
+    <tr><th>優先度</th><th>前版が残した項目</th><th>判定</th><th>本日の実測</th></tr>
+    <tr><td>P0</td><td>VS Code起因の失敗からの回復を確かめる</td><td><b>部分</b></td><td>VS Codeは堅牢化指定のまま稼働し、健全性監査は15:50以降連続PASS。途中の7回の失敗は差し替え作業の時間帯と一致し、VS Code起因ではない（15:50の失敗理由は <span class="mono">openhands_http_unhealthy</span> 等）。9/28 00時台の複合観測と、10/4の週次点検のPASSはまだ時間が来ていない。</td></tr>
+    <tr><td>P0</td><td>障害の原因を分けて記録する</td><td><b>完了</b></td><td>複合観測に工程別の判定（<span class="mono">component_assessment</span>）を加え、実試行で各工程をPASSとして記録した。日次の総合判定は厳格なまま維持している（PRB-20260927-003 解決確認済み）。前提条件の崩れを <span class="mono">BLOCKED</span> と名付ける方式ではなく、工程ごとの合否を並べる方式である。</td></tr>
+    <tr><td>P0</td><td>残存リスクの本人受領</td><td><b>未達</b></td><td>受領判定は <span class="mono">INVALID_FOR_STRICT_ACCEPTANCE</span> のまま（署名なし、HIGH 451）。AIは代筆していない。</td></tr>
+    <tr><td>P1</td><td>評価課題集とpass^k</td><td><b>部分</b></td><td>20課題×3回の回答診断を実装し、週次タイマー（日曜13:40）の定期実行でpass^3 = 0.95を出した。成果物の診断（4課題×3回）は費用上限で8回で止まった。課題は既知の合成課題で、実際の失敗から作った課題集と未見課題、PC3審査と人の判断の一致率はまだない。</td></tr>
+    <tr><td>P1</td><td>段ごとの成功率</td><td><b>部分</b></td><td>複合観測では工程別に分けて記録するようになった。動画経路（受付→PC2生成→PC3審査→最終判定→承認）の段ごとの週次集計は、まだない。</td></tr>
+    <tr><td>P1</td><td>経路ごとの脅威の棚卸し</td><td><b>完了</b></td><td>6経路の表（不信入力と権限・確認できた防御・残件）とOWASPの観点を資料化した。推論サービスの資源上限は実装まで進んだ。sandbox内の認証情報の値と権限、workerへの悪意ある入力は未実証として残件に明記されている（棚卸しとしては完了、対策は一部）。</td></tr>
+    <tr><td>P1</td><td>電力コストの実測</td><td><b>部分</b></td><td>単価38円の設定とGPU電力の継続実測を費用ゲートが参照し、strict95の3条件が通った。単価は契約と照合しておらず、GPU以外は推計である。課題1件あたりの円はまだ出していない。</td></tr>
+    <tr><td>P1</td><td>ローカルAIの候補を1件、採用まで通す</td><td><b>未達</b></td><td>候補は6系統以上作られたが、すべて不採用（判断は正しい）。V7の72時間判定は9/27 23:40以降で、本版の時点ではできない。</td></tr>
+    <tr><td>P1</td><td>PC3レビュー証跡</td><td><b>未達</b></td><td><span class="mono">ACCEPTED_REVIEW_NOT_STRICT8_SUPPORT</span> のままで、strict8の残り2件のうちの1件。</td></tr>
+    <tr><td>P2</td><td>OSのメタパッケージ4件</td><td><b>未達</b></td><td>管理者認証が必要なため、利用者に端末での実行を依頼した（作業記録）。本版の <span class="mono">apt list --upgradable</span> では、メタパッケージ4件と段階配信1件がそのまま残っている。</td></tr>
+    <tr><td>P2</td><td>プレビュー表示の画面確認</td><td><b>未確認</b></td><td>本日の作業記録にも、画面での確認記録は見当たらない。</td></tr>
+    <tr><td>P2</td><td>新しい計測を標準の属性名へ</td><td><b>未確認</b></td><td><span class="mono">scripts/</span> に <span class="mono">gen_ai.*</span> を使うコードはない。本日新しく加わった計測（反復診断・費用・工程別判定）は独自の名前である。</td></tr>
+  </table>
+</div>
+
+<div class="page">
+  <div class="sec-tag">03 — TODAY'S FIXES VERIFIED</div>
+  <h1 class="sec-title">本日の修正の照合 <span class="grad">/ 本版で確かめたものと、作業記録によるもの</span></h1>
+
+  <div class="panel conclusion"><p>09:52以降に、Obsidianの対応記録で約45件、共通受付で26件の案件が記録された。主要な修正を、<b>本版で実機・機械出力から確かめたもの</b>と、<b>作業記録（自己申告）によるもの</b>に分けた。作業記録だけの項目も内容は具体的で、変更前の控え・隔離復元試験・案件番号がそろっている。ただし点数への反映は控えめにした。</p></div>
+
+  <table>
+    <colgroup>
+      <col style="width:20%"><col style="width:36%"><col style="width:12%"><col style="width:32%">
+    </colgroup>
+    <tr><th>修正</th><th>中身</th><th>確認</th><th>本版で見たもの</th></tr>
+    <tr><td>複合E2Eの工程別判定</td><td>総合FAILから、エージェント・周辺環境・後始末の成否を分けて記録する</td><td><b>本版で確認</b></td><td>E2E履歴の11:02・11:12試行に工程別の結果（全PASS）がある。00:10の失敗は残っている</td></tr>
+    <tr><td>残留sandbox監視の参照先</td><td>rootful Dockerを見て稼働中を0件と誤認していたのを、rootlessへ</td><td><b>本版で確認</b></td><td>履歴に <span class="mono">inventory_docker_host=unix:///run/user/1000/docker.sock</span></td></tr>
+    <tr><td>反復診断と週次タイマー</td><td>20課題×3回、正解は評価者側に保持</td><td><b>本版で確認</b></td><td>13:47のタイマー実行：57/60正答、pass^3 = 0.95、8,067トークン</td></tr>
+    <tr><td>推論サービスの資源上限</td><td>無制限だったRAM・PIDを64GiB・1024へ（実測の最大は約6.1GiB・175）</td><td><b>本版で確認</b></td><td><span class="mono">vllm-qwen38-27b-fp8</span>：Memory 68719476736・PidsLimit 1024</td></tr>
+    <tr><td>FileEditorの日本語修正（本番）</td><td>先頭512バイトで多バイト文字が切れて「バイナリ」と誤判定される不具合。本番タグへ適用</td><td>作業記録＋一部</td><td>AgentServer VEXは本版でPASS。本番1会話・179試験・差戻し用タグは作業記録</td></tr>
+    <tr><td>App設定の引継ぎ・納品指示・モデル切替時の保持</td><td>保存したLLM設定の脱落、finish後の納品開始、切替時の全初期化をやめる</td><td>作業記録</td><td>実会話と隔離試験の記録。実際の別モデルへの切替後の保持は未確認</td></tr>
+    <tr><td>トークンの過小計上</td><td>SDKが終わる前の記録で費用を確定していた。5会話120,521トークン分</td><td>作業記録</td><td>採用・生成元の再利用に、最終費用の確認を必須化</td></tr>
+    <tr><td>費用ゲートの参照先・電力</td><td>比較試験に欠けていた項目ではなく、トークン・GPU台帳を参照</td><td><b>本版で確認</b></td><td>strict95のコスト9.0（前版6.5）。GPU 0.742549kWh、単価38円</td></tr>
+    <tr><td>V7採用証拠の修復</td><td>通知表示の変更で採用証拠が失効したのを、計測本体と表示を分けて修復</td><td><b>本版で確認</b></td><td>strict95の <span class="mono">production_revision_adopted</span> PASS、有効1件</td></tr>
+    <tr><td>ローカルAIの候補比較</td><td>診断失敗・計算ツール・JSON制約・短い思考・長い思考・読取の集約</td><td>作業記録</td><td>すべて不採用。本番への採用数の増加なし</td></tr>
+    <tr><td>障害・退行の共通受付</td><td>検出から案件登録までを接続し、週次診断の誤答も自動で受け付ける</td><td><b>本版で確認</b></td><td>既知問題台帳に26件（解決確認14・対応中7・終了4・未対応1）</td></tr>
+    <tr><td>App世代スキャンの欠落</td><td>現行Appイメージに対応するスキャンがなかった</td><td>作業記録＋一部</td><td>実行時影響の切り分けは本版でPASS（稼働中CRITICAL 0）</td></tr>
+  </table>
+
+  <div class="panel callout-warn"><p><b>修正の副作用として見つかったもの。</b>FileEditorの本番適用のためにAgentServerとAppのスキャン結果を20:15・20:22に取り直したが、それを前提にしたHIGH分類（<span class="mono">PC1_コンテナHIGH脆弱性修正可否分類20260817.json</span>、15:39生成）が再生成されていない。分類に記録されたハッシュと現在のスキャンファイルが2件で一致せず、strict95の <span class="mono">scan_classification_consistent</span> が落ちた。HIGHの件数は分類と実スキャンで同じ（67件・222件）で、<b>脆弱性の増加ではなく証跡の同期漏れ</b>である。次の定期スキャン（9/28 03:34）で再生成される見込みだが、スキャンを取り直す経路から分類の再生成を呼ぶ仕組みはない。本版では修正していない。</p></div>
+</div>
+
+<div class="page">
+  <div class="sec-tag">04 — WHAT MOVED</div>
+  <h1 class="sec-title">何が改善し、何が悪化したか <span class="grad">/ 改善+0.9、悪化0、差引+0.09</span></h1>
+
+  <table>
+    <colgroup>
+      <col style="width:14%"><col style="width:8%"><col style="width:22%"><col style="width:22%"><col style="width:34%">
+    </colgroup>
+    <tr><th>観点</th><th>増減</th><th>前版 09-27 09:52</th><th>本版 09-27 20:40</th><th>中身</th></tr>
+    <tr><td>AIエージェント</td><td>+0.1</td><td>評価は集計課題1系統</td><td>20課題×3回・pass^3 0.95、日本語仕様書の不具合を本番修正</td><td>評価の厚みが増えた。合成課題で、成果物の反復は未完了。環境の改善</td></tr>
+    <tr><td>AIオーケストレーション</td><td>±0</td><td>日次投入PASS継続</td><td>同じ</td><td>本日の修正はPC1内が中心</td></tr>
+    <tr><td>再帰的自己改善</td><td>+0.1</td><td>候補の数が少ない</td><td>6系統以上を比較・すべて正しい不採用</td><td>仕組みの利用量は増えた。ローカルAI発の採用は0件。環境の改善</td></tr>
+    <tr><td>可観測性/評価</td><td>+0.2</td><td>原因の取り違え・監視の参照誤り</td><td>工程別判定・共通受付26件・過小計上を発見</td><td>自分の計測の誤りを自分で見つける力が上がった。環境の改善</td></tr>
+    <tr><td>データ・知識基盤</td><td>±0</td><td>週次保管＋全量復元</td><td>同じ</td><td>基盤は前版と同じ</td></tr>
+    <tr><td>セキュリティ</td><td>+0.1</td><td>経路の棚卸しなし・推論の資源無制限</td><td>6経路の棚卸し・64GiB/1024の上限</td><td>本人受領は未署名。分類の同期漏れが新たに出た。環境の改善</td></tr>
+    <tr><td>コスト統治</td><td>+0.2</td><td>電気料金単価なし・電力未計測</td><td>38円・GPU実測・strict95コスト9.0</td><td>単価は契約と未照合、全体はGPU以外が推計。環境の改善</td></tr>
+    <tr><td>人間協働/UX</td><td>+0.1</td><td>納品・日本語ファイルの不具合</td><td>正しい順の納品・日本語仕様書が読める</td><td>プレビュー表示は未確認。環境の改善</td></tr>
+    <tr><td>信頼性/SRE</td><td>+0.1</td><td>VS Code回復の保持は未確認</td><td>約11時間保持・推論に資源上限</td><td>差し替え作業中の監視失敗7回。SLO 3件未達は同じ。環境の改善</td></tr>
+    <tr><td>相互運用性</td><td>±0</td><td>OpenAI互換のPC3審査</td><td>既定モデルの戻りを修正</td><td>他基盤との互換の実証は増えていない</td></tr>
+  </table>
+
+  <div class="panel"><p><b>本版の中心的な発見：修正そのものは早く確かだが、「修正の後始末」を検査が拾っている。</b>
+  本日の変更は数が多い（対応記録約45件・案件26件）。どれも変更前の控え・試験・隔離復元・案件番号がそろっている。一方で、変更に伴う連鎖は人手の手順に頼っており、機械ゲートと健全性監査がそれを拾った。例は、V7の採用証拠の失効（通知表示の変更による）、スキャンの取り直し後に分類が追随しない、App再作成で既定モデルが戻る、差し替え作業中の健全性監査の失敗7回の4つ。
+  検査が働いた証拠でもあるが、10点の条件「退行を自動検出して<b>停止できる</b>」に対して、今は「検出して人が直す」段階にある。変更の前に<b>保守中の印</b>を付け、変更が触る証跡を<b>再生成まで一括で行う</b>ことが次の段階である。</p></div>
+</div>
+
+<div class="page">
+  <div class="sec-tag">05 — MACHINE GATES</div>
+  <h1 class="sec-title">機械ゲートの再実測 <span class="grad">/ 2026-09-27 20:40、依存順で再実行</span></h1>
+
+  <div class="panel conclusion"><p><b>実測の手順。</b>セキュリティスキャン本体は9/27 15:38の定期実行と、20:15・20:22のFileEditor適用に伴う取り直しを用いた。そのうえで、
+  実行時影響の切り分け → システムVEX → AgentServer VEX → strict8 → strict9 → strict95 → strict10 → 証跡TTL監査を20:40に再実行し、同じ時刻にSLOを集計した（通知なし）。閾値・VEXポリシー・スキャナーの除外・証跡の期限は、いずれも変更していない。</p></div>
+
+  <table>
+    <colgroup>
+      <col style="width:13%"><col style="width:18%"><col style="width:18%"><col style="width:51%">
+    </colgroup>
+    <tr><th>ゲート</th><th>前版 09:19</th><th>本版 20:40</th><th>内容</th></tr>
+    <tr><td>証跡TTL</td><td>PASS</td><td>PASS</td><td>必須の失敗0。</td></tr>
+    <tr><td>strict95</td><td>平均8.9・未達6観点</td><td>平均9.15・未達6観点</td><td>コスト6.5→<b>9.0</b>（参照先の是正と電力の実測参照）、再帰8.0→<b>9.0</b>（採用証拠の参照先を現行V7へ直した）、セキュリティ9.0→<b>8.0</b>（分類の同期漏れで-1.0）。AIエージェント8.5・オーケストレーション9.0・信頼性8.0は同じ。可観測性・データ基盤・人間協働・相互運用性は10.0。作業記録どおり、9.15への変化の大半は<b>参照誤りの是正</b>で、実務効果の増加ではない。</td></tr>
+    <tr><td>strict8</td><td>blocker 2</td><td>blocker 2</td><td>残存リスクの正式受領（未署名）、PC3レビュー証跡（<span class="mono">ACCEPTED_REVIEW_NOT_STRICT8_SUPPORT</span>）。実行時CRITICALは0。</td></tr>
+    <tr><td>strict9</td><td>blocker 3</td><td>blocker 3</td><td>strict8の連鎖、残存リスク受領、PC3の無条件レビュー不在。</td></tr>
+    <tr><td>strict10</td><td>blocker 5</td><td>blocker 5</td><td>strict9の連鎖、HIGHのSLA（修正版あり14・なし437）、ホスト更新待ち5件、非天井A/Bが資格外、コストの実質削減が未立証。</td></tr>
+    <tr><td>VEX</td><td>システム実効0／AgentServer PASS</td><td>システム実効0／AgentServer PASS</td><td>どちらも生CRITICAL 5・実効0。生の検出は消さずに残している。</td></tr>
+  </table>
+
+  <p><b>SLO（20:40集計、観測窓は項目ごとに最長30日）</b></p>
+  <table>
+    <tr><th>SLO</th><th>目標</th><th>達成</th><th>状態</th></tr>
+    <tr><td>本番推論モデルの健全性</td><td>99%</td><td>100%（833/833）</td><td>達成</td></tr>
+    <tr><td>本番推論の観測完全性</td><td>99%</td><td>100%（833/833）</td><td>達成</td></tr>
+    <tr><td>実タスク工程成功</td><td>95%</td><td>81.8%（9/11）</td><td>標本不足</td></tr>
+    <tr><td>実タスク正答</td><td>90%</td><td>72.7%（8/11）</td><td>標本不足</td></tr>
+    <tr><td>バックアップ鮮度</td><td>95%</td><td>90.9%</td><td>未達・予算枯渇（過去に最大119時間の空白）</td></tr>
+    <tr><td>必須証跡の期限</td><td>95%</td><td>49.6%（135/272）</td><td>未達・予算枯渇（本日はPASSだが、過去の失効が窓に残る）</td></tr>
+    <tr><td>worker契約成功</td><td>95%</td><td>63.6%</td><td>未達・予算枯渇（過去の欠測込み）</td></tr>
+  </table>
+
+  <div class="panel callout-warn"><p><b>失敗ユニット 2件（前版と同じ）。</b><span class="mono">pc1-weekly-health</span>（09:37、VS Code再起動前の実行）と、9/26 14:46に手動で起動したPC2へのssh疎通確認の一時ユニット（<span class="mono">run-p1107569-i1115316</span>）。システム側の失敗ユニットは0件。reset-failedはしていない。
+  健全性監査（<span class="mono">codex-vllm-health</span>、5分ごと）は09:45以降に142回実行されて135回成功、失敗7回は12:51〜15:50に集中した（理由は未承認digestのsandbox、実行時整合性の更新失敗、OpenHandsのHTTP不調など）。本番イメージとAppの差し替え作業の時間帯と一致し、どれも次の回で回復した。
+  評価対象外は前版と同じ4件（UPS・PC5・第三者監査・14日無退行観測）。除外しても観測は続けており、観測値は出力に残している。</p></div>
+</div>
+
+<div class="page">
+  <div class="sec-tag">06 — NEXT ACTIONS</div>
+  <h1 class="sec-title">次にすべきこと <span class="grad">/ 点を上げるのに効く順</span></h1>
+
+  <table>
+    <colgroup>
+      <col style="width:7%"><col style="width:20%"><col style="width:55%"><col style="width:18%">
+    </colgroup>
+    <tr><th>優先度</th><th>項目</th><th>完了条件</th><th>効く観点</th></tr>
+    <tr><td>P0</td><td>スキャンと分類の同期</td><td>HIGH分類を現在のスキャンから作り直し、strict95の <span class="mono">scan_classification_consistent</span> がPASSすること。あわせて、スキャンを取り直す経路（世代スキャン・候補の昇格）から分類の再生成までを1つの手順にし、同期漏れを試験で再現して防ぐ。</td><td>セキュリティ</td></tr>
+    <tr><td>P0</td><td>残存リスクの本人受領</td><td>生CRITICAL 10・HIGH 451について、最新SLAに接続されたフォームへ本人が記入する（受領・保留・拒否）。受領は解決を意味しない。</td><td>セキュリティ</td></tr>
+    <tr><td>P0</td><td>回復の保持を確かめる</td><td>9/28 00時台の複合観測がPASSすること、10/4の週次点検がPASSすること。</td><td>可観測性・信頼性</td></tr>
+    <tr><td>P1</td><td>ローカルAIの候補を1件、採用まで通す</td><td>既存の事前登録・比較・カナリア・切戻しの手順で、品質が同じで費用が下がる候補を1件採用する。採用を作るために条件を緩めない。V7の72時間判定（9/27 23:40以降）も行う。</td><td>再帰・コスト</td></tr>
+    <tr><td>P1</td><td>成果物の反復と人の判断との一致</td><td>成果物の診断（4課題×3回）を費用上限の中で最後まで回し、pass^3を出す。未見の課題を加える。利用者の承認・やり直しをラベルとして貯め、PC3審査の真陽性率・真陰性率を出す。</td><td>AIエージェント・可観測性</td></tr>
+    <tr><td>P1</td><td>sandboxの認証情報</td><td><span class="mono">LLM_API_KEY</span> 等が何の権限を持つかを確かめ、不要ならsandboxへ渡さない（PRB-20260927-008）。値そのものは証拠に記録しない。</td><td>セキュリティ</td></tr>
+    <tr><td>P1</td><td>変更中の印</td><td>本番の差し替え作業の前に保守中を宣言し、その間の監視の失敗を「変更による」と記録する。宣言のない失敗は本物の障害として扱う。</td><td>信頼性・可観測性</td></tr>
+    <tr><td>P1</td><td>段ごとの成功率</td><td>動画経路と一般依頼の各段の成功・待機・失敗を分けて、週次で出す。</td><td>オーケストレーション・可観測性</td></tr>
+    <tr><td>P1</td><td>電力の仕上げ</td><td>単価を現在の契約と照合する。RAPLの読み取り権限か壁面計測で、GPU以外も実測に近づける。課題1件あたりの円を出す。</td><td>コスト</td></tr>
+    <tr><td>P1</td><td>PC3レビュー証跡</td><td>strict8の残り2件のうちの1件。PC3の無条件PASSか、strict8が求める範囲の証跡を揃える。</td><td>可観測性・セキュリティ</td></tr>
+    <tr><td>P2</td><td>OSのメタパッケージ4件</td><td>利用者の端末で管理者認証して適用し、<span class="mono">apt list --upgradable</span> が段階配信分だけになること。</td><td>セキュリティ</td></tr>
+    <tr><td>P2</td><td>プレビュー表示の画面確認</td><td>高速プレビューを選んだとき、フォームと完了の知らせに「PC3の審査と承認は行わない」と出ることを、利用者と同じ経路で確認する。</td><td>人間協働</td></tr>
+  </table>
+
+  <div class="panel"><p><b>本版で実施していないこと。</b>行ったのは、読み取り、ゲートの再実行とSLO集計（定期タイマーが出すものと同じ標準の報告の更新）、失敗ユニット・健全性監査の履歴・コンテナの資源上限・VS Codeの起動指定・OS更新・疎通の直接確認だけである。分類の再生成、スキャンの実行、reset-failed、OS更新、残存リスクの受領、候補の採用、カナリアの発火、閾値・VEXポリシー・スキャナーの除外の変更、コンテナの停止・削除、外部共有・Git pushは、いずれも行っていない。点を作るためにファイルを触っていない。</p></div>
+</div>
+
+<div class="page">
+  <div class="sec-tag">07 — WORLD PRACTICE BENCHMARK（同日09:52版の再掲）</div>
+  <h1 class="sec-title">世界の先端実践との照合 <span class="grad">/ 同日09:52版の節を再掲</span></h1>
+
+  <div class="panel callout-warn"><p><b>この節は同日09:52版の再掲で、本版の現時点の判定ではない。</b>表の「本環境の現状」は09:52時点の記述である。本版では外部の情報を集め直していない。遅れている4点（評価の厚み・原因の特定・経路ごとの脅威の棚卸し・電力）への本日の対応は、02節と03節に記した。</p></div>
+
+  <div class="panel conclusion"><p><b>集め方。</b>2026-09-27に、AIシステムを実際に作って運用している技術者・組織の一次情報を集めた。本人のブログ、公式のエンジニアリングブログ、学会論文・プレプリント、標準化団体の文書を優先した。まとめ記事は発見の手がかりにとどめ、採点の根拠にしていない。
+  外部の数値は<b>各出典の主張</b>であり、本環境で再現したものではない。照合は「先端がいま何を重視しているか」を物差しにして、本環境の穴を見つけるために行った。</p></div>
+
+  <table>
+    <colgroup>
+      <col style="width:11%"><col style="width:33%"><col style="width:28%"><col style="width:28%">
+    </colgroup>
+    <tr><th>領域</th><th>先端の思想・技術（出典・日付）</th><th>本環境の現状（本日の実測）</th><th>差と示唆</th></tr>
+    <tr><td>何を自動化するか</td><td>Karpathy（Sequoia Ascent講演の要約、2026-04-30）：「従来のソフトは<b>仕様化できるもの</b>を、LLMは<b>検証できるもの</b>を自動化する」。専門家の「agentic engineering」は、設計仕様・差分の確認・試験・評価ループで、誤りうるエージェントを監督すること。</td><td>実タスクE2Eは成果物をPC1の独立計算と完全一致で照合する。PC3の動画審査はAIの自由記述を信用せず、位置（IoU）で判定する。</td><td><b>同じ方向。</b>検証できない部分（動画が意図どおりか）は人の承認へ回している。</td></tr>
+    <tr><td>信頼性の複利</td><td>Karpathy「march of nines」：工程がn段で各段の成功率がpなら、全体の成功率はおよそpのn乗。信頼性の「9」を1つ増やすたびに、同じ量の仕事が要る。</td><td>実タスクの工程成功は80%・正答70%（標本不足）。動画経路はPC1→PC2→PC3→最終判定→承認の多段。</td><td>全体の率だけを見ても、どの段が落としているか分からない。<b>段ごとの成功率</b>を分けて記録する必要がある。</td></tr>
+    <tr><td>評価の設計</td><td>Anthropic「Demystifying evals for AI agents」（2026-01-09）：能力評価（難しく、率は低くてよい）と回帰評価（ほぼ100%を保つ）を分ける。信頼性は<b>pass^k</b>（k回すべて成功する確率）で測る。<b>実際の失敗から20〜50件</b>の課題で始める。採点器が正しいかは記録を読んで確かめる。評価が飽和したら難しい課題を足す。</td><td>日次の評価は生成型の集計課題<b>1系統</b>で、30日の標本は10件。pass^kは測っていない。課題は毎回ほぼ正答し、飽和に近い。</td><td><b>最大の差。</b>動画・一般依頼・PC3審査の実失敗から課題集を作り、能力評価と回帰評価に分け、同じ課題の反復でpass^kを測る。</td></tr>
+    <tr><td>誤りの分析と採点器の検証</td><td>Hamel Husain・Shreya Shankar「AI Evals FAQ」（2026-09-18、5,000人超への講義の集約）：評価で最も重要なのは<b>誤りの分析</b>。大きな変更のたびに20〜50件の出力を人が読み、失敗の型が出尽くすまで続ける。採点は5段階ではなく<b>合否の二値</b>。LLMの採点器は、人のラベルに対する<b>真陽性率・真陰性率</b>を測ってから使う。汎用の指標は誤った安心を生む。</td><td>PC3の動画審査はAIの自由記述を信用せず、位置（IoU）の判定へ置き換えた。利用者は理由付きの「やり直し」を実際に出している。ただし、PC3の審査（LLMの採点器）が人の判断とどれだけ一致するか（真陽性率・真陰性率）は測っていない。</td><td><b>方向は同じ、測定がない。</b>利用者の承認・不採用の判断をラベルとして貯め、PC3審査との一致率を定期的に出す。</td></tr>
+    <tr><td>ハーネス工学</td><td>Google Developers Blog「The Anatomy of Harness Engineering」（2026-09-09、Mullen・Gunderman）：モデルを包む<b>ハーネスを普通のソフトとして</b>単体・結合試験する。直近の失敗から「振る舞い評価」を書き、1回ではなくまとめて実行して傾向を見る。</td><td>判定コードには回帰試験が多い（入力検証474件＋公開API30件、動画320件など）。ただし9/24〜27、監視自身の判定の誤りは試験で捕まらず、運用で見つかった。</td><td><b>監視スクリプトもハーネスとして扱う。</b>誤検知・原因の取り違えの実例を、監視の振る舞い評価として登録する。</td></tr>
+    <tr><td>長時間の作業</td><td>Anthropic「Effective harnesses for long-running agents」（2025-11-26）：進捗ファイル、JSONの機能リスト、1回に1機能、機能ごとのコミット、利用者と同じ経路でのE2E試験。典型的な失敗は「<b>完了の早すぎる宣言</b>」。</td><td>作業記録は自己申告として扱い、報告書は再実測を優先する。JSON台帳・変更前の控え・復元手順が運用規則で標準化されている。</td><td><b>同じ方向。</b>「完了の早すぎる宣言」への防御が、既に規則として組み込まれている。</td></tr>
+    <tr><td>頭脳と手の分離</td><td>Anthropic「Scaling Managed Agents: Decoupling the brain from the hands」（2026-04-08、Lance Martinほか）：モデルとハーネス（頭脳）を実行環境（手）から切り離す。セッションの記録は文脈の外に永続化し、sandboxは<b>使い捨て</b>で壊れたら作り直す。<b>認証情報はsandboxの中に置かない</b>ので、プロンプト注入で漏れない。</td><td>OpenHandsは会話ごとにsandboxを作り、終わった動画会話のsandboxを30分ごとに自動で片付ける。保存会話19件は画面から再開できた（作業記録）。sandbox内に認証情報が渡っていないことの点検記録は、本版では確認できなかった。</td><td><b>使い捨て化は同じ方向。</b>経路ごとの脅威の棚卸し（下の行）で、sandboxへ渡る秘密情報の有無を併せて確かめる。</td></tr>
+    <tr><td>沈黙する障害</td><td>Wu「When Errors Become Narratives」（arXiv 2606.14589、2026-06-12）：本番エージェントの沈黙障害の<b>約70%は人が見つけた</b>。欠陥は試験のない部品の境界に長く潜む。障害は「<b>うるさく、原因が明確で、退屈</b>」にせよ。事後の分析では、監査は<b>退行を87%止めたが、事故を事前に防いだ例は0%</b>で、監査は「予測の道具ではなく退行を止める道具」だった。</td><td>障害はうるさい（FAILを消していない）。だが<b>原因が明確でない</b>。健全性監査のVS Code起因の失敗が複合観測を4日連続FAILにし、前版はそれをエージェントの失敗と書いた。</td><td>前提条件が崩れた回は、FAILではなく<b>BLOCKED（原因：部品名）</b>として記録し、エージェントの成功率から分ける。本環境の機械ゲートも同じ性質を持つ。ゲートの通過を「事故が起きない」証拠と読まない。</td></tr>
+    <tr><td>エージェントの安全</td><td>OWASP「Top 10 for Agentic Applications 2026」（2025-12-09公開、ASI01目標の乗っ取り〜ASI10暴走エージェント）。Simon Willison「lethal trifecta」（2025-06-16）：<b>私的データ・信頼できない入力・外部への送信</b>の3つが揃うエージェントは悪用できる。1つ欠ければ攻撃経路が切れる。</td><td>コンテナの権限縮小（CapDrop=ALL、no-new-privileges）、イメージの承認、VEX、LAN限定の公開。</td><td>部品ごとの防御は厚い。欠けているのは<b>経路ごとの棚卸し</b>で、どの経路で3要素が揃うかの記録は、本版では確認できなかった。</td></tr>
+    <tr><td>サンドボックスと試験先行</td><td>Simon Willison「Agentic Engineering Patterns」（2026-02-23〜連載）・2026年の予測（2026-01-08）：コードを書くことは安くなった。エージェントには<b>先に失敗する試験を書かせてから</b>実装させる（red/green TDD）。最も重要なのは<b>サンドボックス</b>で、root同然でエージェントを動かす慣行は、いずれ大事故を起こすと警告する。</td><td>エージェントはrootlessのコンテナで動き、権限を落としている（CapDrop=ALL、no-new-privileges）。判定コードの修正には、先に再現試験を置く記録が多い（9/26の誤検知修正は9ケース、応答判定は5ケース）。</td><td><b>同じ方向。</b>「root同然で動かさない」は既に満たしている。試験先行を、監視スクリプトの修正にも規則として適用する。</td></tr>
+    <tr><td>自己改善</td><td>Darwin Gödel Machine（Sakana AIほか、ICLR 2026）：自己改変を毎回ベンチマークで実証し、<b>候補の保管庫</b>から枝分かれして探索する（SWE-bench 20.0%→50.0%）。2026-07の自己改善サーベイ（Ren、Schmidhuberほか）は「制御された進化」を中心課題に置く。</td><td>条件を固定した比較、カナリア→切戻し、トークン増を理由にした不採用までを実運用している。採用はCodex実装のV7の1件だけ。</td><td><b>安全側の仕組みは先端並み。</b>欠けているのは候補の<b>母数</b>で、ローカルAIが作る候補の保管庫と、途切れない生成が要る。</td></tr>
+    <tr><td>観測の標準</td><td>OpenTelemetry GenAI semantic conventions：2026-06のv1.42.0で専用リポジトリへ分離した。状態は<b>Development</b>（安定版ではない）で、エージェント・ツール・MCPの属性を定義する。</td><td>独自のJSON・JSONLと台帳で統一し、ハッシュ連鎖で改ざんを検出する。</td><td>急ぐ必要はない。新しく作る計測だけ、<span class="mono">gen_ai.*</span> の属性名に寄せておくと、将来の道具を使える。</td></tr>
+    <tr><td>相互運用</td><td>MCPはLinux FoundationのAgentic AI Foundationへ移管された（2025-12、AGENTS.mdも同財団の創設プロジェクト）。エージェント間通信のA2Aは1.0（署名付きAgent Card）。</td><td>PC1〜PC3は契約付きのJSONで受け渡す。PC3は9/26にOpenAI互換のAPIへ移った。</td><td><b>同じ方向。</b>worker間の契約を外部標準へ寄せるのは、現段階では任意でよい。</td></tr>
+    <tr><td>本番の実態</td><td>Datadog「State of AI Engineering 2026」：本番のAI要求の<b>約5%が失敗</b>し、その<b>約60%が容量の上限</b>による。障壁はモデルの賢さより運用の複雑さ。</td><td>日次実タスクで直近に工程が失敗した唯一の回（9/22）の原因は <span class="mono">resource_capacity_busy</span>。</td><td><b>業界と同じ失敗の形。</b>資源の判定は9/26に是正された（作業記録）。容量待ちを「失敗」と「待機」に分けて数えるとよい。</td></tr>
+  </table>
+
+  <div class="panel callout-good"><p><b>先端と同じ方向にある4点。</b>
+  (1) <b>検証できるものだけを自動化し、検証できないものは人へ回す</b>（Karpathy）。
+  (2) <b>採用前に条件を固定して実測し、採用後も戻せる</b>。トークン増の候補を不採用にしたのは、自己改善研究が重視する「制御された進化」そのものである。
+  (3) <b>作業者の「完了」を信じず、再実測を優先する</b>（Anthropicの長時間ハーネスが挙げる典型的な失敗への防御）。
+  (4) <b>理解を人に残す</b>。残存リスクの受領をAIが代筆しない運用は、Karpathyの「思考は外に出せても、理解は外に出せない」と一致する。</p></div>
+
+  <div class="panel callout-gap"><p><b>先端より遅れている4点。</b>
+  (1) <b>評価の厚み</b>：実失敗から作った20〜50件の課題集、能力評価と回帰評価の分離、同じ課題の反復によるpass^k がない。日次の課題は1系統で飽和に近い。LLMの採点器（PC3審査）を、人の判断との一致率で検証していない。
+  (2) <b>障害の原因の特定</b>：前提条件の失敗とエージェントの失敗が同じFAILになる。本報告書の前版も原因を取り違えた。
+  (3) <b>経路ごとの脅威の棚卸し</b>：部品ごとの防御は厚いが、OWASP ASIや「致命的な三要素」を経路ごとに当てた記録はない。
+  (4) <b>主要な費用の計測</b>：トークンは記録しているが、ローカルAIの主要な費用である電力を円で測っていない。</p></div>
+
+  <div class="panel"><p><b>出典（2026-09-27閲覧）。</b>
+  <span class="mono">karpathy.bearblog.dev/sequoia-ascent-2026/</span> ／
+  <span class="mono">venturebeat.com/technology/karpathys-march-of-nines-shows-why-90-ai-reliability-isnt-even-close-to</span> ／
+  <span class="mono">anthropic.com/engineering/demystifying-evals-for-ai-agents</span> ／
+  <span class="mono">anthropic.com/engineering/effective-harnesses-for-long-running-agents</span> ／
+  <span class="mono">developers.googleblog.com/the-anatomy-of-harness-engineering-how-to-evaluate-iterate-and-guard-ai-coding-agents/</span> ／
+  <span class="mono">arxiv.org/abs/2606.14589</span> ／
+  <span class="mono">genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/</span> ／
+  <span class="mono">simonwillison.net/2025/Jun/16/the-lethal-trifecta/</span> ／
+  <span class="mono">arxiv.org/abs/2505.22954</span>（Darwin Gödel Machine）／
+  <span class="mono">arxiv.org/abs/2607.13104</span>（自己改善サーベイ）／
+  <span class="mono">opentelemetry.io/blog/2026/genai-observability/</span> ／
+  <span class="mono">linuxfoundation.org/press/linux-foundation-announces-the-formation-of-the-agentic-ai-foundation</span> ／
+  <span class="mono">datadoghq.com/about/latest-news/press-releases/datadog-state-of-ai-engineering-report-2026/</span> ／
+  <span class="mono">hamel.dev/blog/posts/evals-faq/</span> ／
+  <span class="mono">anthropic.com/engineering/managed-agents</span> ／
+  <span class="mono">simonwillison.net/2026/Feb/23/agentic-engineering-patterns/</span> ／
+  <span class="mono">simonwillison.net/2026/Jan/8/llm-predictions-for-2026/</span></p></div>
+</div>
+
+<div class="page">
+  <div class="sec-tag">08 — HISTORY</div>
+  <h1 class="sec-title">履歴 <span class="grad">/ 各版の全文は 過去分 に保存している</span></h1>
+
+  <div class="panel callout-warn"><p>現時点の判定は<b>冒頭および 01〜06 の節</b>である（07節は同日09:52版の再掲）。以下は各版の要点を1行にまとめたもので、数値・判定を引用する場合は<b>日付を必ず併記</b>し、原文は <span class="mono">過去分/AI環境分析報告書YYYYMMDD.html</span> を参照すること。</p></div>
+
+  <table>
+    <tr><th>評価日</th><th>独立採点</th><th>その版の要点</th></tr>
+    <tr><td>2026-09-27（20:40）</td><td><b>8.94</b></td><td>本版。前版の指摘に同日中に着手し、工程別判定・20課題×3回の反復診断（pass^3 0.95）・共通受付・経路の脅威棚卸し・推論の資源上限・電力の実測参照・日本語FileEditorの本番修正が入った。ローカルAIの候補6系統以上はすべて正しく不採用。スキャン後の分類の同期漏れでstrict95セキュリティが8.0に。下がった観点なし。</td></tr>
+    <tr><td>2026-09-27（09:52）</td><td>8.85</td><td>再起動・OS更新・証跡の真正な取り直し・VEX PASS・モデル容量是正・PC4週次保管と全量復元で、失敗ユニットは4件→1件。世界の先端実践と照合し、評価の厚み・障害の原因の特定・経路別の脅威棚卸し・電力コストの4点を遅れと判定した。前版の「実作業テスト3日連続FAIL」は複合観測との取り違えとして是正した。（全文は過去分の同日別版）</td></tr>
+    <tr><td>2026-09-26</td><td>8.64</td><td>初の本番採用（SLO集計V7）と修正保持の確認で前進した一方、健全性監査の誤検知が複合観測・失敗ユニットへ連鎖し、再起動の滞留・新しいOS更新22件・VEX未判定が重なった。</td></tr>
+    <tr><td>2026-09-23</td><td>8.93</td><td>worker実投入の3日連続PASSとバックアップ全件照合・PC4追加保管で前進した一方、前版の修正2件の後退、OS更新12件、必須証跡3件の期限切れ、失敗ユニット2件で相殺。</td></tr>
+    <tr><td>2026-09-20</td><td>8.92</td><td>ホスト更新・イメージ昇格・失敗ユニット0件など実測が改善する一方、dry-runのSLO算入という測り方の誤りが是正され、オーケストレーションと相互運用性が下がった。</td></tr>
+    <tr><td>2026-09-19</td><td>8.85</td><td>修正3件は加点されたが、上流更新への未追随（HIGH 43件・ホスト33件）とVEXの計測欠陥で総合は-0.14。strict95は9.61へ後退。</td></tr>
+    <tr><td>2026-09-16</td><td>8.99</td><td>日次スケジューラ・外部バックアップ自動化・SLO定義・運用ダッシュボードを導入。旧尺度のstrict95が初の全通過（9.95）。</td></tr>
+    <tr><td>2026-09-15</td><td>8.61</td><td>採点方式を差分積み上げから<b>絶対基準へ付け直した版</b>（前版9.52から-0.91）。環境の悪化ではなく採点の是正。</td></tr>
+    <tr><td>2026-09-14</td><td>9.29</td><td>E2Eの後始末・工程計測、PC4のSMART/ZFS切り分け、PC2のWake-on-LAN復旧。</td></tr>
+    <tr><td>2026-09-13</td><td>8.1</td><td>比較試験の再設計、外部バックアップ未マウントによる3ゲート連鎖失敗、長期TTL証跡の未更新を記録。</td></tr>
+  </table>
+
+  <div class="panel"><p><b>複数版にわたって解けていない点。</b>(1) 学習成果の採用実績 — コード改善1件（V7）は採用済み。<b>ローカルAIが作った改善の採用は0件のまま</b>。候補の数は本日大きく増えた。(2) strict8の「実行中CRITICAL 0」がOpenHandsを使っていないことを測る定義問題（2026-09-14以降）— 定義は未変更。(3) バックアップ保管先 — 解消済み。(4) AI基盤はPC1単体で冗長性がない。(5) 修正の保持 — VS Code回復は約11時間保持。継続の確認は必要。(6) 期限を持つ証跡に取り直す経路がない — 解消済み。(7) 検査そのものの誤り — 監視のDocker参照・費用の参照・採用証拠の参照・過小計上を本日直した。複合観測は工程別に記録するようになった。(8) 評価の厚みの不足 — 20課題×3回の反復が週次で回り始めた。合成課題で、成果物の反復と人の判断との一致は未完。
+  本版で新たに加わった構造問題は、<b>(9) 変更の連鎖を人手の手順に頼っていること</b>である。採用証拠の失効、スキャン後の分類の同期漏れ、既定モデルの戻り、差し替え作業中の監視の失敗は、どれも検査が拾ったが、変更の側で一括して処理する仕組みはない。</p></div>
+
+  <div class="footer-note">本版の実測は2026-09-27 20:40〜20:45に行った。実行時影響の切り分け → システムVEX → AgentServer VEX → strict8 → strict9 → strict95 → strict10 → 証跡TTL監査の依存順で再実行した結果と、SLO集計、失敗ユニット・健全性監査の履歴（09:45以降）・日次E2Eの2系統の履歴・週次診断の定期実行結果・推論コンテナの資源上限・VS Codeの起動指定・OS更新・PC1〜PC4疎通の直接確認に基づく。本日09:52以降の修正の内容は、Obsidianの対応記録、共通受付の台帳、<span class="mono">reports/evidence/</span> の原本で照合した。
+  評価対象外はUPS・PC5・第三者監査・14日無退行観測の4件で、除外しても観測は継続し、観測値は出力へ残している。機械適合の全通過を「到達」「認定済み」へ読み替えていない。</div>
+</div>
+
+</body>
+</html>
